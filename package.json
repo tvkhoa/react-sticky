@@ -1,6 +1,6 @@
 {
   "name": "eh-react-bottom-sticky",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "description": "Sticky component for React",
   "main": "lib/index.js",
   "scripts": {
