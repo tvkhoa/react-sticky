@@ -7,7 +7,7 @@ export default class Sticky extends Component {
     topOffset: PropTypes.number,
     bottomOffset: PropTypes.number,
     relative: PropTypes.bool,
-    children: PropTypes.func.isRequired
+    children: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -15,19 +15,19 @@ export default class Sticky extends Component {
     topOffset: 0,
     bottomOffset: 0,
     disableCompensation: false,
-    disableHardwareAcceleration: false
+    disableHardwareAcceleration: false,
   };
 
   static contextTypes = {
     subscribe: PropTypes.func,
     unsubscribe: PropTypes.func,
-    getParent: PropTypes.func
+    getParent: PropTypes.func,
   };
 
   state = {
     isSticky: false,
     wasSticky: false,
-    style: {}
+    style: {},
   };
 
   componentWillMount() {
@@ -52,7 +52,7 @@ export default class Sticky extends Component {
   handleContainerEvent = ({
     distanceFromTop,
     distanceFromBottom,
-    eventSource
+    eventSource,
   }) => {
     const parent = this.context.getParent();
 
@@ -72,10 +72,15 @@ export default class Sticky extends Component {
       distanceFromBottom - this.props.bottomOffset - calculatedHeight;
 
     const wasSticky = !!this.state.isSticky;
+
+    const clientHeight =
+      window.innerHeight ||
+      document.documentElement.clientHeight ||
+      document.body.clientHeight;
+
     const isSticky = preventingStickyStateChanges
       ? wasSticky
-      : distanceFromTop <= -this.props.topOffset &&
-        distanceFromBottom > -this.props.bottomOffset;
+      : -distanceFromTop + clientHeight <= distanceFromBottom - distanceFromTop;
 
     distanceFromBottom =
       (this.props.relative
@@ -86,14 +91,9 @@ export default class Sticky extends Component {
       ? {}
       : {
           position: "fixed",
-          top:
-            bottomDifference > 0
-              ? this.props.relative
-                ? parent.offsetTop - parent.offsetParent.scrollTop
-                : 0
-              : bottomDifference,
+          bottom: 0,
           left: placeholderClientRect.left,
-          width: placeholderClientRect.width
+          width: placeholderClientRect.width,
         };
 
     if (!this.props.disableHardwareAcceleration) {
@@ -106,7 +106,7 @@ export default class Sticky extends Component {
       distanceFromTop,
       distanceFromBottom,
       calculatedHeight,
-      style
+      style,
     });
   };
 
@@ -118,18 +118,18 @@ export default class Sticky extends Component {
         distanceFromTop: this.state.distanceFromTop,
         distanceFromBottom: this.state.distanceFromBottom,
         calculatedHeight: this.state.calculatedHeight,
-        style: this.state.style
+        style: this.state.style,
       }),
       {
-        ref: content => {
+        ref: (content) => {
           this.content = ReactDOM.findDOMNode(content);
-        }
+        },
       }
     );
 
     return (
       <div>
-        <div ref={placeholder => (this.placeholder = placeholder)} />
+        <div ref={(placeholder) => (this.placeholder = placeholder)} />
         {element}
       </div>
     );
